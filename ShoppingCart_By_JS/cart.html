@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="src/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=shopping_cart" />
+</head>
+<body>
+    <nav>
+        <ul class="nav-ul">
+            <li><a href="/index.html">Clothing Store</a></li>
+            <li class="cart-li">
+                <a href="/cart.html">
+                    <span class="material-symbols-outlined">
+                    shopping_cart
+                    </span>
+                    <div id="cartTotalItem">0</div>
+                </a>
+                
+            </li>
+        </ul>
+    </nav>
+
+    <!-- ! added item  -->
+
+    <div class="text-center" id="label">
+        <h2 id="totalBill">Total Bill: </h2>
+        <div id="cart-button">
+            <div><a href="/checkout.html"><button id="checkout">checkout</button></a></div>
+            <div onclick="clearCart()" id="clrCart">clear cart</div>
+        </div>
+    </div>
+
+    <div class="shopping-cart" id="shopping-cart">
+        
+    </div>
+</body>
+<script src="src/Data.js"></script>
+<script src="src/cart.js"></script>
+</html>
