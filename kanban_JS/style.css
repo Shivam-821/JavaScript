@@ -1,70 +1,127 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-html, body{
-    width: 100%;
-    height: 100%;
-    background-color: rgb(193, 169, 139);
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 1px;
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(193, 169, 139);
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 1px;
 }
 
-#nav-bar{
-    height: 45px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+#nav-bar {
+  height: 45px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 #Kanban {
-    font-size: x-large;
-    color: rgb(61, 77, 34);
+  font-size: x-large;
+  color: rgb(61, 77, 34);
 }
 
-#kanban-btn{
-    padding: 6px 8px;
-    background-color: rgb(179, 250, 226);
-    outline: none;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
+#kanban-btn {
+  padding: 6px 8px;
+  background-color: rgb(179, 250, 226);
+  outline: none;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
 }
 
-#kanban-btn:hover{
-    background-color: rgb(163, 250, 250);
-    border: solid;
-    border-color: rgb(249, 218, 115);
+#kanban-btn:hover {
+  background-color: rgb(163, 250, 250);
+  border: solid;
+  border-color: rgb(249, 218, 115);
 }
 
-#kanban-main{
-    display: flex;
-    justify-content: space-between;
-    height: 90%;
-    padding: 15px;
+#kanban-main {
+  display: flex;
+  justify-content: space-between;
+  height: 90%;
+  padding: 15px;
 }
 
-.kanban-board{
-    width: 260px;
-    height: 450px;
-    border: solid rgb(255, 238, 174) 2px;
-    border-radius: 10px;
-    color: rgb(52, 45, 45);
-    display: flex;
-    flex-direction: column;
-    padding: 8px 15px;
+.kanban-board {
+  width: 260px;
+  height: 450px;
+  border: solid rgb(255, 238, 174) 2px;
+  border-radius: 10px;
+  color: rgb(52, 45, 45);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 15px;
+}
+.kanban-board:hover {
+  border: dashed rgb(254, 236, 209) 2px;
 }
 
-.kanban-board h3{
-    font-size: small;
+.kanban-board h3 {
+  font-size: small;
 }
 
 .kanban-inner-div {
-    display: flex;
-    height: 10px;
-    justify-content: space-between;
+  display: flex;
+  height: 10px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.task {
+  border: solid rgb(254, 200, 200) 1.3px;
+  height: 70px;
+  border-radius: 10px;
+  box-shadow: 3px 3px 10px rgb(204, 166, 120);
+  cursor: move;
+  position: relative;
+}
+
+.task:hover {
+  scale: 1.04;
+  border: solid rgb(254, 236, 198) 2px;
+  box-shadow: 4px 4px 8px rgb(222, 178, 124);
+}
+
+.task button {
+  position: absolute;
+  padding: 2px 5px;
+  bottom: 2px;
+  right: 5px;
+  border-radius: 5px;
+  border: solid brown 1px;
+  background-color: red;
+}
+.task button:hover {
+  background-color: rgb(186, 1, 1);
+  color: white;
+  cursor: pointer;
+}
+.heading {
+  outline: none;
+  background-color: rgb(193, 169, 139);
+  border: none;
+  border-radius: 10px;
+  padding: 1.5px 2px 0.5px 5px;
+  font-size: medium;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: rgb(78, 70, 0);
+}
+
+.descrp {
+  outline: none;
+  background-color: rgb(193, 169, 139);
+  margin-top: 1px;
+  border: none;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  border-radius: 10px;
+  padding: 1.5px 2px 0.5px 5px;
+  font-size: small;
+  color: rgb(60, 82, 42);
 }
