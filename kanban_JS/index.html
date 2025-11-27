@@ -12,39 +12,40 @@
       <button id="kanban-btn">Add new Task</button>
     </nav>
     <main id="kanban-main">
-      <div class="kanban-board">
+      <div id="kanban-todo-board" class="kanban-board">
         <div class="kanban-inner-div">
           <h3>Todo</h3>
           <h3>Count: <span>0</span></h3>
         </div>
         <div class="task">
-          <input class="heading" type="text" />
-          <input class="descrp" type="text" />
+          <input class="heading" type="text" placeholder="Enter Task Heading"/>
+          <input class="descrp" type="text" placeholder="Enter Task Description"/>
           <button>Delete</button>
         </div>
       </div>
       <div class="kanban-board">
         <div class="kanban-inner-div">
-          <h3>Todo</h3>
+          <h3>In Progess!!</h3>
           <h3>Count: <span>0</span></h3>
         </div>
         <div class="task">
-          <input class="heading" type="text" />
-          <input class="descrp" type="text" />
+          <input readonly class="heading" type="text" />
+          <input readonly class="descrp" type="text" />
           <button>Delete</button>
         </div>
       </div>
       <div class="kanban-board">
         <div class="kanban-inner-div">
-          <h3>Todo</h3>
+          <h3>Done</h3>
           <h3>Count: <span>0</span></h3>
         </div>
         <div class="task">
-          <input class="heading" type="text" />
-          <input class="descrp" type="text" />
+          <input readonly class="heading" type="text" />
+          <input readonly class="descrp" type="text" />
           <button>Delete</button>
         </div>
       </div>
     </main>
   </body>
+  <script src="logic.js"></script>
 </html>
