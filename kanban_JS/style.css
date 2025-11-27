@@ -125,3 +125,8 @@ body {
   font-size: small;
   color: rgb(60, 82, 42);
 }
+
+::selection {
+  background-color: rgb(254, 208, 140);
+  color: green;
+}
