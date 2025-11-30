@@ -31,10 +31,13 @@ function addDragEventsOnColumn(column) {
     column.addEventListener("drop", function (e) {
         e.preventDefault();
         this.classList.remove("hover-over")
+        this.appendChild(draggedElement);
     })
 }
 
 addDragEventsOnColumn(TodoTask)
 addDragEventsOnColumn(ProgressTask)
 addDragEventsOnColumn(DoneTask)
+
+
 

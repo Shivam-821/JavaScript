@@ -9,7 +9,7 @@
   <body>
     <nav id="nav-bar">
       <h1 id="Kanban">Kanban Board</h1>
-      <button id="kanban-btn">Add new Task</button>
+      <button id="kanban-add-btn">Add new Task</button>
     </nav>
     <main id="kanban-main">
       <div id="todo" class="kanban-board">
@@ -36,6 +36,17 @@
         </div>
       </div>
     </main>
+
+    <div id="modal" class="active">
+      <div class="modal-blur"></div>
+    <div class="modal add-new-task">
+      <div class="center">
+        <input type="text" placeholder="Task Title">
+      <textarea name="" id="" placeholder="Task Description"></textarea>
+      <button>Submit</button>
+      </div>
+    </div>
+    </div>
   </body>
   <script src="logic.js"></script>
 </html>
