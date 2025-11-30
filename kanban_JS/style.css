@@ -45,6 +45,7 @@ body {
 #kanban-main {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
   height: 90%;
   padding: 15px;
 }
@@ -58,9 +59,12 @@ body {
   display: flex;
   flex-direction: column;
   padding: 8px 15px;
+  transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
 }
-.kanban-board:hover {
-  border: dashed rgb(254, 236, 209) 2px;
+
+.hover-over {
+  border:2px dashed rgb(254, 236, 209);
+  scale: 1.05;
 }
 
 .kanban-board h3 {
@@ -79,9 +83,10 @@ body {
   height: 70px;
   border-radius: 10px;
   box-shadow: 3px 3px 10px rgb(204, 166, 120);
-  cursor: move;
-  position: relative;
+  cursor: grab;
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .task:hover {
@@ -91,24 +96,22 @@ body {
 }
 
 .task button {
-  position: absolute;
+  align-self: flex-end;
   padding: 2px 5px;
-  bottom: 2px;
-  right: 5px;
+  margin-right: 4px;
   border-radius: 5px;
-  border: solid brown 1px;
-  background-color: red;
+  border: solid rgb(199, 50, 50) 1px;
+  background-color: rgb(254, 54, 54);
 }
 .task button:hover {
-  background-color: rgb(186, 1, 1);
+  background-color: rgb(213, 3, 3);
   color: white;
   cursor: pointer;
 }
 .heading {
-  outline: none;
   background-color: rgb(193, 169, 139);
-  border: none;
   border-radius: 10px;
+  font-weight: 600;
   padding: 1.5px 2px 0.5px 5px;
   font-size: medium;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;

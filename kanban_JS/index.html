@@ -12,37 +12,27 @@
       <button id="kanban-btn">Add new Task</button>
     </nav>
     <main id="kanban-main">
-      <div id="kanban-todo-board" class="kanban-board">
+      <div id="todo" class="kanban-board">
         <div class="kanban-inner-div">
           <h3>Todo</h3>
           <h3>Count: <span>0</span></h3>
         </div>
-        <div class="task">
-          <input class="heading" type="text" placeholder="Enter Task Heading"/>
-          <input class="descrp" type="text" placeholder="Enter Task Description"/>
+        <div class="task" draggable="true">
+          <div class="heading">Task 1</div>
+          <div class="descrp">Description for Task 1</div>
           <button>Delete</button>
         </div>
       </div>
-      <div class="kanban-board">
+      <div id="progress" class="kanban-board">
         <div class="kanban-inner-div">
           <h3>In Progess!!</h3>
           <h3>Count: <span>0</span></h3>
         </div>
-        <div class="task">
-          <input readonly class="heading" type="text" />
-          <input readonly class="descrp" type="text" />
-          <button>Delete</button>
-        </div>
       </div>
       <div class="kanban-board">
-        <div class="kanban-inner-div">
+        <div id="done" class="kanban-inner-div">
           <h3>Done</h3>
           <h3>Count: <span>0</span></h3>
-        </div>
-        <div class="task">
-          <input readonly class="heading" type="text" />
-          <input readonly class="descrp" type="text" />
-          <button>Delete</button>
         </div>
       </div>
     </main>

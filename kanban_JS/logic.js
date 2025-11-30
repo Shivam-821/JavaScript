@@ -1,23 +1,14 @@
-
-
-// add todo-task
+const ProgressTask = document.getElementById("progress")
+const DoneTask = document.getElementById("done")
+const TodoTask = document.getElementById("todo")
 const addBtn = document.getElementById("kanban-btn");
-const kanbanTodoTask = document.getElementById("kanban-todo-board")
+const taskDiv = document.querySelectorAll(".task")
 
-addBtn.addEventListener("click", function () {
-    kanbanTodoTask.innerHTML += `
-    <div class="task">
-        <input class="heading" type="text" placeholder="Enter Task Heading"/>
-        <input class="descrp" type="text" placeholder="Enter Task Description"/>
-        <button>Delete</button>
-    </div>
-    `
-})
 
-// delete todo-task
-const deleteBtn = document.querySelector(".task button")
-
-deleteBtn.addEventListener("click", function (e) {
-    e.target.parentElement.remove()
+// draging the div from one board to another
+taskDiv.forEach(task => {
+    task.addEventListener("drag", function (e) {
+        console.log("drag", e)
+    })
 })
 
