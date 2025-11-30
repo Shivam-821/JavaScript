@@ -2,7 +2,9 @@ const ProgressTask = document.getElementById("progress")
 const DoneTask = document.getElementById("done")
 const TodoTask = document.getElementById("todo")
 const addBtn = document.getElementById("kanban-btn");
-const taskDiv = document.querySelectorAll(".task")
+const taskDiv = document.querySelectorAll(".task");
+const modal = document.getElementById("modal");
+const addButton = document.getElementById("kanban-add-btn");
 
 let draggedElement = null;
 
@@ -39,5 +41,12 @@ addDragEventsOnColumn(TodoTask)
 addDragEventsOnColumn(ProgressTask)
 addDragEventsOnColumn(DoneTask)
 
+// adding new task
+addButton.addEventListener("click", function () {
+    modal.classList.add("active")
+})
 
-
+const modalBlur = document.querySelector(".modal-blur")
+modalBlur.addEventListener("click", function () {
+    modal.classList.remove("active")
+})
