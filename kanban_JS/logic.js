@@ -9,6 +9,14 @@ const addTaskBtn = document.getElementById("add-task-btn");
 const deleteBtn = document.querySelectorAll(".delete-btn")
 
 let draggedElement = null;
+let tasksData = {};
+
+const columns = [TodoTask, ProgressTask, DoneTask]
+
+// const localTask = localStorage.getItem("tasksData")
+// if (localTask) {
+//     tasksData = JSON.parse(localTask)
+// }
 
 
 // draging the div from one board to another
@@ -38,6 +46,14 @@ function addDragEventsOnColumn(column) {
         if (draggedElement) {
             this.appendChild(draggedElement);
         }
+
+        columns.forEach(column => {
+           const count = column.querySelectorAll(".task").length;
+           const spanElement = column.querySelector("span");
+           if (spanElement) {
+               spanElement.textContent = count;
+           }
+        })
     });
 }
 
@@ -72,6 +88,25 @@ addTaskBtn.addEventListener("click", function () {
     task.addEventListener("drag", () => {
         draggedElement = task;
     })
+        
+    columns.forEach(column => {
+        const tasks = column.querySelectorAll(".task");
+        const spanElement = column.querySelector("span");
+        spanElement.textContent = tasks.length;
+
+        tasksData[column.id] = Array.from(tasks).map(task => { 
+            return {
+                title: task.querySelector(".heading").textContent,
+                description: task.querySelector(".descrp").textContent,
+            }
+        })
+
+        console.log(tasksData)
+        localStorage.setItem("tasksData", JSON.stringify(tasksData))
+    })
+
+    
+    
     document.querySelector("#task-heading").value = ""
     document.querySelector("#task-descrp").value = ""
 })
