@@ -33,7 +33,7 @@ function addDragEventsOnColumn(column) {
     })
 
     column.addEventListener("drop", function (e) {
-        e.preventDefault();
+        // e.preventDefault();
         this.classList.remove("hover-over");
         if (draggedElement) {
             this.appendChild(draggedElement);
@@ -55,23 +55,26 @@ modalBlur.addEventListener("click", function () {
     modal.classList.remove("active")
 })
 
-// addTaskBtn.addEventListener("click", function () {
-//     const taskTitle = document.querySelector("input").value;
-//     const taskDescription = document.querySelector("textarea").value;
-//     console.log(taskTitle, ":", taskDescription)
-//     const task = document.createElement("div")
-//     task.classList.add("task")
-//     task.setAttribute("draggable", "true")
-//     task.innerHTML = `
-//     <div class="heading">${taskTitle}</div>
-//     <div class="descrp">${taskDescription}</div>
-//     <button class="delete-btn">Delete</button>
-//     `
-//     TodoTask.appendChild(task)
-//     modal.classList.remove("active")
-//     document.querySelector("input").value = ""
-//     document.querySelector("textarea").value = ""
-// })
+addTaskBtn.addEventListener("click", function () {
+    const taskTitle = document.querySelector("#task-heading").value;
+    const taskDescription = document.querySelector("#task-descrp").value;
+    // console.log(taskTitle, ":", taskDescription)
+    const task = document.createElement("div")
+    task.classList.add("task")
+    task.setAttribute("draggable", "true")
+    task.innerHTML = `
+    <div class="heading">${taskTitle}</div>
+    <div class="descrp">${taskDescription}</div>
+    <button class="delete-btn">Delete</button>
+    `
+    TodoTask.appendChild(task)
+    modal.classList.remove("active")
+    task.addEventListener("drag", () => {
+        draggedElement = task;
+    })
+    document.querySelector("#task-heading").value = ""
+    document.querySelector("#task-descrp").value = ""
+})
 
 // deleteBtn.forEach(btn => {
 //     btn.addEventListener("click", function () {
