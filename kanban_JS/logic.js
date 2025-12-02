@@ -13,10 +13,14 @@ let tasksData = {};
 
 const columns = [TodoTask, ProgressTask, DoneTask]
 
-// const localTask = localStorage.getItem("tasksData")
-// if (localTask) {
-//     tasksData = JSON.parse(localTask)
-// }
+const localTask = localStorage.getItem("tasksData")
+if (localTask) {
+    tasksData = JSON.parse(localTask)
+
+    for (const col in tasksData) {
+        console.log(col, tasksData[col])
+    }
+}
 
 
 // draging the div from one board to another
@@ -53,7 +57,16 @@ function addDragEventsOnColumn(column) {
            if (spanElement) {
                spanElement.textContent = count;
            }
+            console.log(column)
+            tasksData[column.id] = Array.from(column.querySelectorAll(".task")).map(task => {
+                return {
+                    title: task.querySelector(".heading").textContent,
+                    description: task.querySelector(".descrp").textContent,
+                }
+            })
         })
+
+        localStorage.setItem("tasksData", JSON.stringify(tasksData))
     });
 }
 
@@ -101,7 +114,6 @@ addTaskBtn.addEventListener("click", function () {
             }
         })
 
-        console.log(tasksData)
         localStorage.setItem("tasksData", JSON.stringify(tasksData))
     })
 
