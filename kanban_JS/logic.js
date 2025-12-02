@@ -33,11 +33,18 @@ if (localTask) {
                 draggedElement = taskDiv;
             })
         })
+
+        const count = column.querySelectorAll(".task").length;
+        const spanElement = column.querySelector("span");
+        if (spanElement) {
+            spanElement.textContent = count;
+        }
     }
 }
 
 
 // draging the div from one board to another
+// TODO: need to remove it tomorrow
 taskDiv.forEach(task => {
     task.addEventListener("dragstart", function (e) {
         // console.log("drag", e)
@@ -71,7 +78,7 @@ function addDragEventsOnColumn(column) {
            if (spanElement) {
                spanElement.textContent = count;
            }
-            console.log(column)
+            
             tasksData[column.id] = Array.from(column.querySelectorAll(".task")).map(task => {
                 return {
                     title: task.querySelector(".heading").textContent,
