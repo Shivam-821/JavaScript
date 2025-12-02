@@ -18,7 +18,21 @@ if (localTask) {
     tasksData = JSON.parse(localTask)
 
     for (const col in tasksData) {
-        console.log(col, tasksData[col])
+        const column = document.getElementById(col)
+        tasksData[col].forEach(task => {
+            const taskDiv = document.createElement("div")
+            taskDiv.classList.add("task")
+            taskDiv.setAttribute("draggable", "true")
+            taskDiv.innerHTML = `
+            <div class="heading">${task.title}</div>
+            <div class="descrp">${task.description}</div>
+            <button class="delete-btn">Delete</button>
+            `
+            column.appendChild(taskDiv)
+            taskDiv.addEventListener("drag", () => {
+                draggedElement = taskDiv;
+            })
+        })
     }
 }
 
