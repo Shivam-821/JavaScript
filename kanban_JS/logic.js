@@ -6,7 +6,6 @@ const taskDiv = document.querySelectorAll(".task");
 const modal = document.getElementById("modal");
 const addButton = document.getElementById("kanban-add-btn");
 const addTaskBtn = document.getElementById("add-task-btn");
-const deleteBtn = document.querySelectorAll(".delete-btn")
 
 let draggedElement = null;
 let tasksData = {};
@@ -122,8 +121,15 @@ addTaskBtn.addEventListener("click", function () {
     document.querySelector("#task-descrp").value = ""
 })
 
-// deleteBtn.forEach(btn => {
-//     btn.addEventListener("click", function () {
-//         this.parentElement.remove();
-//     });
-// });
+// TODO1: delete task
+// TODO2: right now new created task is not applying this event, so we need to make a function to apply this eventa as we have done for the drag event
+const deleteBtn = document.querySelectorAll(".delete-btn")
+deleteBtn.forEach(btn => {
+    btn.addEventListener("click", function () {
+        this.parentElement.remove();
+        columns.forEach(column => {
+            countTasks(column)
+            saveTasksData(column)
+        })
+    });
+});
