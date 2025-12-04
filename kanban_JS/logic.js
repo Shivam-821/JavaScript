@@ -45,6 +45,14 @@ function creatingTasksDiv(task, column) {
     taskDiv.addEventListener("drag", () => {
         draggedElement = taskDiv;
     })
+
+    taskDiv.querySelector(".delete-btn").addEventListener("click", function () {
+        this.parentElement.remove();
+        columns.forEach(column => {
+            countTasks(column)
+            saveTasksData(column)
+        })
+    });
 }
 
 const localTask = localStorage.getItem("tasksData")
@@ -120,16 +128,3 @@ addTaskBtn.addEventListener("click", function () {
     document.querySelector("#task-heading").value = ""
     document.querySelector("#task-descrp").value = ""
 })
-
-// TODO1: delete task
-// TODO2: right now new created task is not applying this event, so we need to make a function to apply this eventa as we have done for the drag event
-const deleteBtn = document.querySelectorAll(".delete-btn")
-deleteBtn.forEach(btn => {
-    btn.addEventListener("click", function () {
-        this.parentElement.remove();
-        columns.forEach(column => {
-            countTasks(column)
-            saveTasksData(column)
-        })
-    });
-});
