@@ -1,106 +1,172 @@
 #include <stdio.h>
+#include <math.h>
 
-int main() {
-    int n, epochs;
-    double learningRate;
+#define N 10
+#define FEATURES 3
+#define MAX_ITER 100000
 
-    printf("Weighted Linear Regression using Gradient Descent\n");
-    printf("--------------------------------------------------\n");
+// Training dataset
+// Features: Height, Weight, Foot Size
+// Label: 1 = Male, 0 = Female
 
-    printf("Enter number of data points: ");
-    scanf("%d", &n);
+double X[N][FEATURES] = {
+    {6.0, 77, 12},
+    {5.9, 75, 11},
+    {5.8, 70, 10},
+    {5.7, 68, 10},
+    {5.5, 65, 9},
+    {5.4, 60, 8},
+    {5.3, 58, 8},
+    {5.2, 55, 7},
+    {5.1, 52, 7},
+    {5.0, 50, 6}
+};
 
-    double X[n], Y[n], W[n];
+int Y[N] = {
+    1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0
+};
 
-    printf("Enter X, Y and Weight values:\n");
 
-    for (int i = 0; i < n; i++) {
-        printf("Data %d (X Y Weight): ", i + 1);
-        scanf("%lf %lf %lf", &X[i], &Y[i], &W[i]);
+// Sigmoid function
+double sigmoid(double z) {
+    return 1.0 / (1.0 + exp(-z));
+}
+
+
+// Calculate cost
+double calculateCost(double weights[], double bias) {
+    double cost = 0.0;
+
+    for (int i = 0; i < N; i++) {
+
+        double z = bias;
+
+        for (int j = 0; j < FEATURES; j++) {
+            z += weights[j] * X[i][j];
+        }
+
+        double prediction = sigmoid(z);
+
+        // Avoid log(0)
+        if (prediction < 1e-15)
+            prediction = 1e-15;
+
+        if (prediction > 1 - 1e-15)
+            prediction = 1 - 1e-15;
+
+        cost += -(Y[i] * log(prediction)
+                + (1 - Y[i]) * log(1 - prediction));
     }
 
-    printf("Enter Learning Rate: ");
-    scanf("%lf", &learningRate);
+    return cost / N;
+}
 
-    printf("Enter Number of Epochs: ");
-    scanf("%d", &epochs);
 
-    // Model parameters
-    double slope = 0.0;
+int main() {
+
+    double weights[FEATURES] = {0.0, 0.0, 0.0};
     double bias = 0.0;
 
-    printf("\nTraining Started...\n");
+    double learningRate = 0.0001;
 
-    for (int epoch = 1; epoch <= epochs; epoch++) {
+    printf("============================================\n");
+    printf(" LOGISTIC REGRESSION TRAINING\n");
+    printf("============================================\n");
 
-        double dw = 0.0;
+    printf("Learning Rate: %f\n", learningRate);
+
+    // -------------------------------
+    // Gradient Descent
+    // -------------------------------
+
+    for (int iteration = 0; iteration < MAX_ITER; iteration++) {
+
+        double dw[FEATURES] = {0.0, 0.0, 0.0};
         double db = 0.0;
-        double wmse = 0.0;
-        double totalWeight = 0.0;
 
-        // Calculate gradients and WMSE
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < N; i++) {
 
-            double predicted = slope * X[i] + bias;
-            double error = predicted - Y[i];
+            // Calculate z
+            double z = bias;
 
-            // Weighted gradients
-            dw += W[i] * error * X[i];
-            db += W[i] * error;
+            for (int j = 0; j < FEATURES; j++) {
+                z += weights[j] * X[i][j];
+            }
 
-            // Weighted squared error
-            wmse += W[i] * error * error;
-            totalWeight += W[i];
+            // Prediction
+            double prediction = sigmoid(z);
+
+            // Error
+            double error = prediction - Y[i];
+
+            // Gradient for weights
+            for (int j = 0; j < FEATURES; j++) {
+                dw[j] += error * X[i][j];
+            }
+
+            // Gradient for bias
+            db += error;
         }
 
         // Average gradients
-        dw = (2.0 / totalWeight) * dw;
-        db = (2.0 / totalWeight) * db;
+        for (int j = 0; j < FEATURES; j++) {
+            dw[j] /= N;
+        }
 
-        // Update parameters
-        slope -= learningRate * dw;
+        db /= N;
+
+        // Update weights
+        for (int j = 0; j < FEATURES; j++) {
+            weights[j] -= learningRate * dw[j];
+        }
+
+        // Update bias
         bias -= learningRate * db;
-
-        // Calculate WMSE
-        wmse = wmse / totalWeight;
-
-        printf("Epoch %d WMSE = %.6f\n", epoch, wmse);
     }
 
-    printf("----------------------------------------\n");
-    printf("Training Completed Successfully\n");
-    printf("----------------------------------------\n");
+    printf("Training Complete.\n");
 
-    printf("Final Weight (Slope) = %.4f\n", slope);
-    printf("Final Bias (Intercept) = %.4f\n", bias);
+    printf("Optimal Weights:\n");
+    printf("Bias = %.6f\n", bias);
+    printf("Height = %.6f\n", weights[0]);
+    printf("Weight = %.6f\n", weights[1]);
+    printf("Foot Size = %.6f\n", weights[2]);
 
-    printf("Regression Equation:\n");
-    printf("Y = %.4fX + %.4f\n", slope, bias);
+    // -------------------------------
+    // Prediction
+    // -------------------------------
 
-    printf("--------------------------------------------------\n");
-    printf("X\tActual Y\tWeight\tPredicted Y\n");
-    printf("--------------------------------------------------\n");
+    double height, weight, footSize;
 
-    double finalWMSE = 0.0;
-    double totalWeight = 0.0;
+    printf("\nEnter details for prediction:\n");
 
-    for (int i = 0; i < n; i++) {
+    printf("Enter Height (feet): ");
+    scanf("%lf", &height);
 
-        double predicted = slope * X[i] + bias;
-        double error = predicted - Y[i];
+    printf("Enter Weight (kg): ");
+    scanf("%lf", &weight);
 
-        finalWMSE += W[i] * error * error;
-        totalWeight += W[i];
+    printf("Enter Foot Size: ");
+    scanf("%lf", &footSize);
 
-        printf("%.2f\t%.2f\t\t%.2f\t%.2f\n",
-               X[i], Y[i], W[i], predicted);
+    // Calculate linear combination
+    double z = bias
+             + weights[0] * height
+             + weights[1] * weight
+             + weights[2] * footSize;
+
+    // Probability
+    double probability = sigmoid(z);
+
+    printf("Probability of Male: %.6f\n", probability);
+
+    // Threshold = 0.5
+    if (probability >= 0.5) {
+        printf("Predicted Gender: Male\n");
+    } else {
+        printf("Predicted Gender: Female\n");
     }
-
-    finalWMSE /= totalWeight;
-
-    printf("--------------------------------------------------\n");
-    printf("Final Weighted Mean Squared Error (WMSE) = %.6f\n",
-           finalWMSE);
 
     return 0;
 }
