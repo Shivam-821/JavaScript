@@ -1,5 +1,5 @@
+#include <stdio.h>
 #include <graphics.h>
-#include <conio.h>
 #include <stdlib.h>
 
 void bresenham(int x1, int y1, int x2, int y2)
@@ -41,13 +41,13 @@ int main()
     int gd = DETECT, gm;
     int x1, y1, x2, y2;
 
-    initgraph(&gd, &gm, (char*)"");
+    initgraph(&gd, &gm, "");
 
-    cout << "Enter x1 and y1: ";
-    cin >> x1 >> y1;
+    printf("Enter x1 y1: ");
+    scanf("%d %d", &x1, &y1);
 
-    cout << "Enter x2 and y2: ";
-    cin >> x2 >> y2;
+    printf("Enter x2 y2: ");
+    scanf("%d %d", &x2, &y2);
 
     bresenham(x1, y1, x2, y2);
 
