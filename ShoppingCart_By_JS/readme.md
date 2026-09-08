@@ -1,185 +1,103 @@
-	#include <GL/glut.h>
-
-	#include <stdlib.h>
-
-	#include <stdio.h>
-
-	 
-
-	int startX, startY, endX, endY;
-
-	 
-
-	/* Generalized Bresenham's Line Drawing Algorithm */
-
-	void drawLine(int x1, int y1, int x2, int y2)
-
-	{
-
-	    int dx = abs(x2 - x1);
-
-	    int dy = abs(y2 - y1);
-
-	 
-
-	    int sx = (x1 < x2) ? 1 : -1;
-
-	    int sy = (y1 < y2) ? 1 : -1;
-
-	 
-
-	    int err = dx - dy;
-
-	 
-
-	    glBegin(GL_POINTS);
-
-	 
-
-	    while (1)
-
-	    {
-
-	        glVertex2i(x1, y1);
-
-	 
-
-	        if (x1 == x2 && y1 == y2)
-
-	            break;
-
-	 
-
-	        int e2 = 2 * err;
-
-	 
-
-	        if (e2 > -dy)
-
-	        {
-
-	            err = err - dy;
-
-	            x1 = x1 + sx;
-
-	        }
-
-	 
-
-	        if (e2 < dx)
-
-	        {
-
-	            err = err + dx;
-
-	            y1 = y1 + sy;
-
-	        }
-
-	    }
-
-	 
-
-	    glEnd();
-
-	}
-
-	 
-
-	void display()
-
-	{
-
-	    glClear(GL_COLOR_BUFFER_BIT);
-
-	 
-
-	    glColor3f(1.0, 1.0, 1.0);
-
-	    glPointSize(2.0);
-
-	 
-
-	    drawLine(startX, startY, endX, endY);
-
-	 
-
-	    glFlush();
-
-	}
-
-	 
-
-	void init()
-
-	{
-
-	    glClearColor(0.0, 0.0, 0.0, 1.0);
-
-	 
-
-	    glMatrixMode(GL_PROJECTION);
-
-	    glLoadIdentity();
-
-	 
-
-	    gluOrtho2D(0, 800, 0, 600);
-
-	 
-
-	    glMatrixMode(GL_MODELVIEW);
-
-	    glLoadIdentity();
-
-	}
-
-	 
-
-	int main(int argc, char **argv)
-
-	{
-
-	    printf("Enter starting point (x1 y1): ");
-
-	    scanf("%d %d", &startX, &startY);
-
-	 
-
-	    printf("Enter ending point (x2 y2): ");
-
-	    scanf("%d %d", &endX, &endY);
-
-	 
-
-	    glutInit(&argc, argv);
-
-	    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-
-	 
-
-	    glutInitWindowSize(800, 600);
-
-	    glutInitWindowPosition(100, 100);
-
-	 
-
-	    glutCreateWindow("Bresenham's Line Drawing Algorithm");
-
-	 
-
-	    init();
-
-	 
-
-	    glutDisplayFunc(display);
-
-	 
-
-	    glutMainLoop();
-
-	 
-
-	    return 0;
-
-	}
+#include <graphics.h>
+#include <stdio.h>
+#include <math.h>
+#include <conio.h>
+
+#define PI 3.14159265
+
+void rotateOrigin(int x[], int y[], int n, float angle)
+{
+    float rad = angle * PI / 180.0;
+    int i;
+
+    for (i = 0; i < n; i++)
+    {
+        int newX = x[i] * cos(rad) - y[i] * sin(rad);
+        int newY = x[i] * sin(rad) + y[i] * cos(rad);
+
+        x[i] = newX;
+        y[i] = newY;
+    }
+}
+
+void rotateFixedPoint(int x[], int y[], int n,
+                      float angle, int h, int k)
+{
+    float rad = angle * PI / 180.0;
+    int i;
+
+    for (i = 0; i < n; i++)
+    {
+        // Translate fixed point to origin
+        int tx = x[i] - h;
+        int ty = y[i] - k;
+
+        // Rotate
+        int rx = tx * cos(rad) - ty * sin(rad);
+        int ry = tx * sin(rad) + ty * cos(rad);
+
+        // Translate back
+        x[i] = rx + h;
+        y[i] = ry + k;
+    }
+}
+
+void drawTriangle(int x[], int y[])
+{
+    line(x[0], y[0], x[1], y[1]);
+    line(x[1], y[1], x[2], y[2]);
+    line(x[2], y[2], x[0], y[0]);
+}
+
+int main()
+{
+    int gd = DETECT, gm;
+
+    int x[3] = {200, 300, 250};
+    int y[3] = {200, 200, 100};
+
+    int xo[3], yo[3];
+    int xf[3], yf[3];
+
+    float angle;
+    int h, k;
+
+    initgraph(&gd, &gm, "");
+
+    // Draw original triangle
+    drawTriangle(x, y);
+
+    printf("Enter rotation angle: ");
+    scanf("%f", &angle);
+
+    // Copy original coordinates
+    for (int i = 0; i < 3; i++)
+    {
+        xo[i] = x[i];
+        yo[i] = y[i];
+
+        xf[i] = x[i];
+        yf[i] = y[i];
+    }
+
+    // Rotate about origin
+    rotateOrigin(xo, yo, 3, angle);
+
+    // Draw triangle rotated about origin
+    drawTriangle(xo, yo);
+
+    // Fixed point
+    printf("Enter fixed point (h, k): ");
+    scanf("%d %d", &h, &k);
+
+    // Rotate about fixed point
+    rotateFixedPoint(xf, yf, 3, angle, h, k);
+
+    // Draw triangle rotated about fixed point
+    drawTriangle(xf, yf);
+
+    getch();
+    closegraph();
+
+    return 0;
+}
