@@ -1,103 +1,98 @@
-#include <graphics.h>
+
+
+
+
 #include <stdio.h>
-#include <math.h>
-#include <conio.h>
 
-#define PI 3.14159265
+int main() {
 
-void rotateOrigin(int x[], int y[], int n, float angle)
-{
-    float rad = angle * PI / 180.0;
-    int i;
+    // NAND gate training data
+    float input[4][3] = {
+        {1, 0, 0},
+        {1, 0, 1},
+        {1, 1, 0},
+        {1, 1, 1}
+    };
 
-    for (i = 0; i < n; i++)
-    {
-        int newX = x[i] * cos(rad) - y[i] * sin(rad);
-        int newY = x[i] * sin(rad) + y[i] * cos(rad);
+    int target[4] = {1, 1, 1, 0};
 
-        x[i] = newX;
-        y[i] = newY;
-    }
-}
+    // Initial weights
+    float weight[3] = {0.3, 0.1, 0.1};
 
-void rotateFixedPoint(int x[], int y[], int n,
-                      float angle, int h, int k)
-{
-    float rad = angle * PI / 180.0;
-    int i;
+    // Learning rate
+    float learning_rate = 0.1;
 
-    for (i = 0; i < n; i++)
-    {
-        // Translate fixed point to origin
-        int tx = x[i] - h;
-        int ty = y[i] - k;
+    // Threshold
+    float threshold = 0.5;
 
-        // Rotate
-        int rx = tx * cos(rad) - ty * sin(rad);
-        int ry = tx * sin(rad) + ty * cos(rad);
+    // Number of epochs
+    int epochs = 8;
 
-        // Translate back
-        x[i] = rx + h;
-        y[i] = ry + k;
-    }
-}
+    int i, j;
 
-void drawTriangle(int x[], int y[])
-{
-    line(x[0], y[0], x[1], y[1]);
-    line(x[1], y[1], x[2], y[2]);
-    line(x[2], y[2], x[0], y[0]);
-}
+    // Training
+    for (i = 0; i < epochs; i++) {
 
-int main()
-{
-    int gd = DETECT, gm;
+        printf("Number of count is %d\n", i);
 
-    int x[3] = {200, 300, 250};
-    int y[3] = {200, 200, 100};
+        for (j = 0; j < 4; j++) {
 
-    int xo[3], yo[3];
-    int xf[3], yf[3];
+            // Calculate weighted sum
+            float sum = 0;
 
-    float angle;
-    int h, k;
+            sum = input[j][0] * weight[0]
+                + input[j][1] * weight[1]
+                + input[j][2] * weight[2];
 
-    initgraph(&gd, &gm, "");
+            printf("Sum is %f\n", sum);
 
-    // Draw original triangle
-    drawTriangle(x, y);
+            // Threshold activation function
+            int output;
 
-    printf("Enter rotation angle: ");
-    scanf("%f", &angle);
+            if (sum >= threshold)
+                output = 1;
+            else
+                output = 0;
 
-    // Copy original coordinates
-    for (int i = 0; i < 3; i++)
-    {
-        xo[i] = x[i];
-        yo[i] = y[i];
+            // Calculate error
+            int error = target[j] - output;
 
-        xf[i] = x[i];
-        yf[i] = y[i];
+            printf("Error is %d\n", error);
+
+            // Perceptron learning rule
+            for (int k = 0; k < 3; k++) {
+                weight[k] = weight[k]
+                          + learning_rate * error * input[j][k];
+            }
+
+            // Display updated weights
+            printf("Weight 0 = %f Weight 1 = %f Weight 2 = %f\n",
+                   weight[0], weight[1], weight[2]);
+        }
     }
 
-    // Rotate about origin
-    rotateOrigin(xo, yo, 3, angle);
+    // Testing
+    printf("\nTesting the NAND gate:\n");
 
-    // Draw triangle rotated about origin
-    drawTriangle(xo, yo);
+    for (i = 0; i < 4; i++) {
 
-    // Fixed point
-    printf("Enter fixed point (h, k): ");
-    scanf("%d %d", &h, &k);
+        float sum = 0;
 
-    // Rotate about fixed point
-    rotateFixedPoint(xf, yf, 3, angle, h, k);
+        sum = input[i][0] * weight[0]
+            + input[i][1] * weight[1]
+            + input[i][2] * weight[2];
 
-    // Draw triangle rotated about fixed point
-    drawTriangle(xf, yf);
+        int output;
 
-    getch();
-    closegraph();
+        if (sum >= threshold)
+            output = 1;
+        else
+            output = 0;
+
+        printf("Sum is %f\n", sum);
+        printf("The output for test data %d is: %d\n",
+               i, output);
+    }
 
     return 0;
 }
