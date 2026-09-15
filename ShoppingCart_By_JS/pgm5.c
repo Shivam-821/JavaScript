@@ -1,54 +1,59 @@
 #include <GL/glut.h>
+#include <stdio.h>
 
-// Camera position
-float eyeX = 3.0, eyeY = 3.0, eyeZ = 3.0;
+// Camera position and rotation angles
+float camX = 0.0, camY = 0.0, camZ = 5.0;
+float rotX = 0.0, rotY = 0.0;
+float fov = 60.0;    // Field of view for perspective
 
-// Draw the colored cube
+// Cube rotation
+float cubeAngle = 0.0;
+
 void drawCube()
 {
     glBegin(GL_QUADS);
 
-    // Front - Red
-    glColor3f(1, 0, 0);
-    glVertex3f(-1, -1, 1);
-    glVertex3f(1, -1, 1);
-    glVertex3f(1, 1, 1);
-    glVertex3f(-1, 1, 1);
+    // Front face (RED)
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex3f(-1.0, -1.0,  1.0);
+    glVertex3f( 1.0, -1.0,  1.0);
+    glVertex3f( 1.0,  1.0,  1.0);
+    glVertex3f(-1.0,  1.0,  1.0);
 
-    // Back - Green
-    glColor3f(0, 1, 0);
-    glVertex3f(-1, -1, -1);
-    glVertex3f(-1, 1, -1);
-    glVertex3f(1, 1, -1);
-    glVertex3f(1, -1, -1);
+    // Back face (GREEN)
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex3f(-1.0, -1.0, -1.0);
+    glVertex3f(-1.0,  1.0, -1.0);
+    glVertex3f( 1.0,  1.0, -1.0);
+    glVertex3f( 1.0, -1.0, -1.0);
 
-    // Left - Blue
-    glColor3f(0, 0, 1);
-    glVertex3f(-1, -1, -1);
-    glVertex3f(-1, -1, 1);
-    glVertex3f(-1, 1, 1);
-    glVertex3f(-1, 1, -1);
+    // Top face (BLUE)
+    glColor3f(0.0, 0.0, 1.0);
+    glVertex3f(-1.0,  1.0, -1.0);
+    glVertex3f(-1.0,  1.0,  1.0);
+    glVertex3f( 1.0,  1.0,  1.0);
+    glVertex3f( 1.0,  1.0, -1.0);
 
-    // Right - Yellow
-    glColor3f(1, 1, 0);
-    glVertex3f(1, -1, -1);
-    glVertex3f(1, 1, -1);
-    glVertex3f(1, 1, 1);
-    glVertex3f(1, -1, 1);
+    // Bottom face (YELLOW)
+    glColor3f(1.0, 1.0, 0.0);
+    glVertex3f(-1.0, -1.0, -1.0);
+    glVertex3f( 1.0, -1.0, -1.0);
+    glVertex3f( 1.0, -1.0,  1.0);
+    glVertex3f(-1.0, -1.0,  1.0);
 
-    // Top - Cyan
-    glColor3f(0, 1, 1);
-    glVertex3f(-1, 1, -1);
-    glVertex3f(-1, 1, 1);
-    glVertex3f(1, 1, 1);
-    glVertex3f(1, 1, -1);
+    // Right face (MAGENTA)
+    glColor3f(1.0, 0.0, 1.0);
+    glVertex3f( 1.0, -1.0, -1.0);
+    glVertex3f( 1.0,  1.0, -1.0);
+    glVertex3f( 1.0,  1.0,  1.0);
+    glVertex3f( 1.0, -1.0,  1.0);
 
-    // Bottom - Magenta
-    glColor3f(1, 0, 1);
-    glVertex3f(-1, -1, -1);
-    glVertex3f(1, -1, -1);
-    glVertex3f(1, -1, 1);
-    glVertex3f(-1, -1, 1);
+    // Left face (CYAN)
+    glColor3f(0.0, 1.0, 1.0);
+    glVertex3f(-1.0, -1.0, -1.0);
+    glVertex3f(-1.0, -1.0,  1.0);
+    glVertex3f(-1.0,  1.0,  1.0);
+    glVertex3f(-1.0,  1.0, -1.0);
 
     glEnd();
 }
@@ -58,11 +63,16 @@ void display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    // Camera view
-    gluLookAt(eyeX, eyeY, eyeZ,
-              0, 0, 0,
-              0, 1, 0);
+    // Set camera position (eye, center, up)
+    gluLookAt(camX, camY, camZ,    // Eye position
+              0.0, 0.0, 0.0,       // Look at origin
+              0.0, 1.0, 0.0);      // Up vector
 
+    // Apply user rotations (to rotate the whole scene)
+    glRotatef(rotX, 1.0, 0.0, 0.0);
+    glRotatef(rotY, 0.0, 1.0, 0.0);
+
+    // Draw the color cube
     drawCube();
 
     glutSwapBuffers();
@@ -71,13 +81,13 @@ void display()
 void reshape(int w, int h)
 {
     if (h == 0) h = 1;
-
     glViewport(0, 0, w, h);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluPerspective(60.0, (float)w / (float)h, 1.0, 20.0);
+    // Perspective projection
+    gluPerspective(fov, (float)w / h, 0.1, 100.0);
 
     glMatrixMode(GL_MODELVIEW);
 }
@@ -86,39 +96,94 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch (key)
     {
-        case 'w': eyeY += 0.2; break;
-        case 's': eyeY -= 0.2; break;
-        case 'a': eyeX -= 0.2; break;
-        case 'd': eyeX += 0.2; break;
-        case 'z': eyeZ -= 0.2; break;
-        case 'x': eyeZ += 0.2; break;
-        case 27: exit(0);
-    }
+        // Move camera closer / farther (Z-axis)
+        case 'w': case 'W': camZ -= 0.3; break;
+        case 's': case 'S': camZ += 0.3; break;
 
+        // Move camera left / right (X-axis)
+        case 'a': case 'A': camX -= 0.3; break;
+        case 'd': case 'D': camX += 0.3; break;
+
+        // Move camera up / down (Y-axis)
+        case 'q': case 'Q': camY += 0.3; break;
+        case 'e': case 'E': camY -= 0.3; break;
+
+        // Rotate scene
+        case 'i': case 'I': rotX -= 5.0; break;
+        case 'k': case 'K': rotX += 5.0; break;
+        case 'j': case 'J': rotY -= 5.0; break;
+        case 'l': case 'L': rotY += 5.0; break;
+
+        // Zoom via FOV (perspective effect)
+        case '+': fov -= 2.0; if (fov < 10.0) fov = 10.0; break;
+        case '-': fov += 2.0; if (fov > 120.0) fov = 120.0; break;
+
+        // Reset
+        case 'r': case 'R':
+            camX = 0.0; camY = 0.0; camZ = 5.0;
+            rotX = 0.0; rotY = 0.0;
+            fov = 60.0;
+            break;
+
+        case 27: exit(0);  // ESC to quit
+    }
+    reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
     glutPostRedisplay();
+}
+
+void specialKeys(int key, int x, int y)
+{
+    switch (key)
+    {
+        case GLUT_KEY_UP:    camY += 0.3; break;
+        case GLUT_KEY_DOWN:  camY -= 0.3; break;
+        case GLUT_KEY_LEFT:  camX -= 0.3; break;
+        case GLUT_KEY_RIGHT: camX += 0.3; break;
+    }
+    glutPostRedisplay();
+}
+
+void printHelp()
+{
+    printf("\n========== COLOR CUBE - CONTROLS ==========\n");
+    printf("  W / S      : Move camera closer / farther (Z)\n");
+    printf("  A / D      : Move camera left / right (X)\n");
+    printf("  Q / E      : Move camera up / down (Y)\n");
+    printf("  I / K      : Rotate scene around X-axis\n");
+    printf("  J / L      : Rotate scene around Y-axis\n");
+    printf("  + / -      : Change FOV (Zoom effect)\n");
+    printf("  R          : Reset all\n");
+    printf("  ESC        : Quit\n");
+    printf("===========================================\n\n");
 }
 
 void init()
 {
-    glClearColor(0, 0, 0, 1);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);       // Enable depth testing
+    glClearColor(0.1, 0.1, 0.1, 1.0);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fov, 1.0, 0.1, 100.0);
+    glMatrixMode(GL_MODELVIEW);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
-
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(600, 600);
-    glutCreateWindow("Color Cube with Perspective View");
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Color Cube with Perspective Camera");
 
     init();
+    printHelp();
 
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeys);
 
     glutMainLoop();
-
     return 0;
 }
