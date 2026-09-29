@@ -2,27 +2,33 @@
 
 // Light source properties
 GLfloat light_position[] = { 5.0, 8.0, 5.0, 1.0 };  // Positional light
-GLfloat light_ambient[]  = { 0.2, 0.2, 0.2, 1.0 };
-GLfloat light_diffuse[]  = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat light_ambient[]  = { 0.3, 0.3, 0.35, 1.0 };
+GLfloat light_diffuse[]  = { 1.0, 0.95, 0.85, 1.0 }; // slightly warm
 GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 
-// Material properties for teapot (shiny ceramic)
-GLfloat pot_ambient[]   = { 0.3, 0.1, 0.05, 1.0 };
-GLfloat pot_diffuse[]   = { 0.8, 0.3, 0.1, 1.0 };
+// Material properties for teapot (shiny ceramic) - TEAL/BLUE
+GLfloat pot_ambient[]   = { 0.0, 0.25, 0.3, 1.0 };
+GLfloat pot_diffuse[]   = { 0.0, 0.65, 0.75, 1.0 };
 GLfloat pot_specular[]  = { 1.0, 1.0, 1.0, 1.0 };
-GLfloat pot_shininess[] = { 100.0 };
+GLfloat pot_shininess[] = { 120.0 };
 
-// Material properties for table (matte wood)
-GLfloat table_ambient[]   = { 0.25, 0.15, 0.05, 1.0 };
-GLfloat table_diffuse[]   = { 0.55, 0.35, 0.15, 1.0 };
-GLfloat table_specular[]  = { 0.2, 0.2, 0.2, 1.0 };
-GLfloat table_shininess[] = { 10.0 };
+// Material properties for table top (wood)
+GLfloat table_ambient[]   = { 0.35, 0.18, 0.05, 1.0 };
+GLfloat table_diffuse[]   = { 0.65, 0.35, 0.12, 1.0 };
+GLfloat table_specular[]  = { 0.25, 0.15, 0.05, 1.0 };
+GLfloat table_shininess[] = { 15.0 };
+
+// Leg material (dark wood)
+GLfloat leg_ambient[]   = { 0.2, 0.1, 0.03, 1.0 };
+GLfloat leg_diffuse[]   = { 0.4, 0.2, 0.05, 1.0 };
+GLfloat leg_specular[]  = { 0.2, 0.1, 0.05, 1.0 };
+GLfloat leg_shininess[] = { 10.0 };
 
 void init(void)
 {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    // Sky-blue background instead of black
+    glClearColor(0.35, 0.55, 0.75, 1.0);
 
-    // Enable lighting and depth test
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
@@ -34,12 +40,29 @@ void init(void)
     glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 
-    // Enable color tracking so glColor sets material colors
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-
-    // Smooth shading
     glShadeModel(GL_SMOOTH);
+}
+
+void drawFloor(void)
+{
+    // A colored floor plane so colors reflect nicely
+    GLfloat floor_ambient[]   = { 0.15, 0.3, 0.15, 1.0 };
+    GLfloat floor_diffuse[]   = { 0.25, 0.55, 0.25, 1.0 };
+    GLfloat floor_specular[]  = { 0.0, 0.0, 0.0, 1.0 };
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT,   floor_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE,   floor_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR,  floor_specular);
+
+    glBegin(GL_QUADS);
+        glNormal3f(0.0, 1.0, 0.0);
+        glVertex3f(-10.0, -2.0, -10.0);
+        glVertex3f( 10.0, -2.0, -10.0);
+        glVertex3f( 10.0, -2.0,  10.0);
+        glVertex3f(-10.0, -2.0,  10.0);
+    glEnd();
 }
 
 void display(void)
@@ -47,14 +70,17 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
-    gluLookAt(4.0, 5.0, 8.0,    // eye position
-              0.0, 1.0, 0.0,    // look at point
-              0.0, 1.0, 0.0);   // up vector
+    gluLookAt(4.5, 5.0, 8.0,   // eye
+              0.0, 1.0, 0.0,   // look at
+              0.0, 1.0, 0.0);  // up
 
-    // Reposition light after camera setup so it stays in world coords
+    // Re-specify light position after camera setup
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-    // ---- Draw the Table (top) ----
+    // ---- Floor ----
+    drawFloor();
+
+    // ---- Table top (brown wood) ----
     glPushMatrix();
         glMaterialfv(GL_FRONT, GL_AMBIENT,   table_ambient);
         glMaterialfv(GL_FRONT, GL_DIFFUSE,   table_diffuse);
@@ -62,11 +88,16 @@ void display(void)
         glMaterialfv(GL_FRONT, GL_SHININESS, table_shininess);
 
         glTranslatef(0.0, 0.0, 0.0);
-        glScalef(4.0, 0.2, 4.0);   // flat, wide top
+        glScalef(4.0, 0.2, 4.0);
         glutSolidCube(1.0);
     glPopMatrix();
 
-    // ---- Draw Table Legs ----
+    // ---- Table legs (dark brown) ----
+    glMaterialfv(GL_FRONT, GL_AMBIENT,   leg_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE,   leg_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR,  leg_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, leg_shininess);
+
     GLfloat legX[4] = { 1.7, -1.7,  1.7, -1.7 };
     GLfloat legZ[4] = { 1.7,  1.7, -1.7, -1.7 };
 
@@ -78,15 +109,47 @@ void display(void)
         glPopMatrix();
     }
 
-    // ---- Draw the Teapot on the table ----
+    // ---- Teapot (colorful ceramic) ----
     glPushMatrix();
         glMaterialfv(GL_FRONT, GL_AMBIENT,   pot_ambient);
         glMaterialfv(GL_FRONT, GL_DIFFUSE,   pot_diffuse);
         glMaterialfv(GL_FRONT, GL_SPECULAR,  pot_specular);
         glMaterialfv(GL_FRONT, GL_SHININESS, pot_shininess);
 
-        glTranslatef(0.0, 0.9, 0.0);   // sit on top of table
+        glTranslatef(0.0, 0.9, 0.0);
         glutSolidTeapot(0.8);
+    glPopMatrix();
+
+    // ---- A small colored sphere (orange fruit) next to the teapot ----
+    GLfloat fruit_ambient[]   = { 0.5, 0.2, 0.0, 1.0 };
+    GLfloat fruit_diffuse[]   = { 1.0, 0.55, 0.0, 1.0 };
+    GLfloat fruit_specular[]  = { 1.0, 1.0, 0.8, 1.0 };
+    GLfloat fruit_shininess[] = { 60.0 };
+
+    glPushMatrix();
+        glMaterialfv(GL_FRONT, GL_AMBIENT,   fruit_ambient);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE,   fruit_diffuse);
+        glMaterialfv(GL_FRONT, GL_SPECULAR,  fruit_specular);
+        glMaterialfv(GL_FRONT, GL_SHININESS, fruit_shininess);
+
+        glTranslatef(1.0, 0.3, 0.8);
+        glutSolidSphere(0.3, 32, 32);
+    glPopMatrix();
+
+    // ---- Another fruit (red apple) on the other side ----
+    GLfloat apple_ambient[]   = { 0.4, 0.0, 0.0, 1.0 };
+    GLfloat apple_diffuse[]   = { 0.9, 0.1, 0.1, 1.0 };
+    GLfloat apple_specular[]  = { 1.0, 0.9, 0.9, 1.0 };
+    GLfloat apple_shininess[] = { 80.0 };
+
+    glPushMatrix();
+        glMaterialfv(GL_FRONT, GL_AMBIENT,   apple_ambient);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE,   apple_diffuse);
+        glMaterialfv(GL_FRONT, GL_SPECULAR,  apple_specular);
+        glMaterialfv(GL_FRONT, GL_SHININESS, apple_shininess);
+
+        glTranslatef(-1.0, 0.25, 0.8);
+        glutSolidSphere(0.25, 32, 32);
     glPopMatrix();
 
     glutSwapBuffers();
@@ -107,7 +170,7 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(700, 600);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("Shaded Scene: Teapot on a Table");
+    glutCreateWindow("Colorful Shaded Scene: Teapot on a Table");
 
     init();
     glutDisplayFunc(display);
