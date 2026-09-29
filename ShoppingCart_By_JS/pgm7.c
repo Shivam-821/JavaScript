@@ -19,36 +19,42 @@ void drawTable()
 {
     setMaterial(0.45, 0.25, 0.1);
 
+    /* Table top */
     glPushMatrix();
     glTranslatef(0, -1.5, 0);
-    glScalef(3.5, 0.25, 3.0);
+    glScalef(4.0, 0.4, 3.2);
     glutSolidCube(1);
     glPopMatrix();
 
+    /* Front-left leg */
     glPushMatrix();
-    glTranslatef(-2.5, -3.0, -2);
-    glScalef(0.3, 3.0, 0.3);
+    glTranslatef(-2.7, -3.0, 2.0);
+    glScalef(0.4, 3.0, 0.4);
     glutSolidCube(1);
     glPopMatrix();
 
+    /* Front-right leg */
     glPushMatrix();
-    glTranslatef(2.5, -3.0, -2);
-    glScalef(0.3, 3.0, 0.3);
+    glTranslatef(2.7, -3.0, 2.0);
+    glScalef(0.4, 3.0, 0.4);
     glutSolidCube(1);
     glPopMatrix();
 
+    /* Back-left leg */
     glPushMatrix();
-    glTranslatef(-2.5, -3.0, 2);
-    glScalef(0.3, 3.0, 0.3);
+    glTranslatef(-2.7, -3.0, -2.0);
+    glScalef(0.4, 3.0, 0.4);
     glutSolidCube(1);
     glPopMatrix();
 
+    /* Back-right leg */
     glPushMatrix();
-    glTranslatef(2.5, -3.0, 2);
-    glScalef(0.3, 3.0, 0.3);
+    glTranslatef(2.7, -3.0, -2.0);
+    glScalef(0.4, 3.0, 0.4);
     glutSolidCube(1);
     glPopMatrix();
 }
+
 
 void display()
 {
