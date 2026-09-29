@@ -1,193 +1,176 @@
 #include <GL/glut.h>
-#include <math.h>
+#include <stdlib.h>
 
-/* ---------- LIGHT ---------- */
-GLfloat light_position[] = { 5.0, 8.0, 6.0, 1.0 };
-GLfloat light_ambient[]  = { 0.25, 0.25, 0.30, 1.0 };
-GLfloat light_diffuse[]  = { 1.0, 0.95, 0.90, 1.0 };
-GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+// Global variables for rotation
+static float rotateX = 20.0f;
+static float rotateY = 30.0f;
 
-/* ---------- TABLE TOP (rich mahogany) ---------- */
-GLfloat table_ambient[]   = { 0.25, 0.10, 0.03, 1.0 };
-GLfloat table_diffuse[]   = { 0.55, 0.22, 0.08, 1.0 };
-GLfloat table_specular[]  = { 0.55, 0.30, 0.15, 1.0 };
-GLfloat table_shininess[] = { 60.0 };
+// Light properties
+GLfloat lightAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+GLfloat lightDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat lightSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat lightPosition[] = { 5.0f, 8.0f, 5.0f, 1.0f }; // Positional light
 
-/* ---------- LEGS (dark walnut) ---------- */
-GLfloat leg_ambient[]   = { 0.12, 0.05, 0.02, 1.0 };
-GLfloat leg_diffuse[]   = { 0.30, 0.12, 0.04, 1.0 };
-GLfloat leg_specular[]  = { 0.30, 0.15, 0.08, 1.0 };
-GLfloat leg_shininess[] = { 40.0 };
+// Material properties for the teapot
+GLfloat potAmbient[] = { 0.3f, 0.1f, 0.1f, 1.0f };
+GLfloat potDiffuse[] = { 0.9f, 0.2f, 0.2f, 1.0f };
+GLfloat potSpecular[] = { 1.0f, 0.8f, 0.8f, 1.0f };
+GLfloat potShininess[] = { 80.0f };
 
-/* ---------- RAINBOW BANDS FOR THE TEAPOT ---------- */
-#define NUM_BANDS 12
-GLfloat rainbow[NUM_BANDS][3] = {
-    { 0.95, 0.10, 0.10 },  // red
-    { 0.98, 0.35, 0.05 },  // orange-red
-    { 0.98, 0.60, 0.05 },  // orange
-    { 0.98, 0.85, 0.05 },  // yellow
-    { 0.55, 0.90, 0.10 },  // lime
-    { 0.10, 0.85, 0.25 },  // green
-    { 0.05, 0.85, 0.65 },  // teal
-    { 0.05, 0.75, 0.95 },  // cyan
-    { 0.10, 0.35, 0.95 },  // blue
-    { 0.45, 0.15, 0.90 },  // indigo
-    { 0.80, 0.15, 0.75 },  // purple
-    { 0.95, 0.20, 0.55 }   // magenta
-};
-
-#define POT_RADIUS 0.8
-#define POT_BOTTOM (-0.8)
-#define POT_TOP    (0.8)
+// Material properties for the table
+GLfloat tableAmbient[] = { 0.2f, 0.15f, 0.1f, 1.0f };
+GLfloat tableDiffuse[] = { 0.6f, 0.45f, 0.3f, 1.0f };
+GLfloat tableSpecular[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+GLfloat tableShininess[] = { 30.0f };
 
 void init(void)
 {
-    /* BLACK background as requested */
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-
+    glClearColor(0.1f, 0.1f, 0.15f, 1.0f); // Dark background
+    
+    // Enable depth testing
+    glEnable(GL_DEPTH_TEST);
+    
+    // Enable lighting
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
-
-    /* Two-sided lighting so inner surfaces of handle/spout also shade */
-    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-
-    /* IMPORTANT: do NOT enable GL_COLOR_MATERIAL here.
-       We use glMaterialfv explicitly for full control. */
-
+    
+    // Set light properties
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    
+    // Enable color material for easy color changes
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    
+    // Enable smooth shading
     glShadeModel(GL_SMOOTH);
-
-    glEnable(GL_CLIP_PLANE0);
-    glEnable(GL_CLIP_PLANE1);
 }
 
-/* Helper: set material properties in one call */
-void setMaterial(const GLfloat *amb, const GLfloat *dif,
-                 const GLfloat *spec, const GLfloat *shin)
+void drawTable(void)
 {
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,   amb);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,   dif);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,  spec);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shin);
+    // Set table material properties
+    glMaterialfv(GL_FRONT, GL_AMBIENT, tableAmbient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, tableDiffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, tableSpecular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, tableShininess);
+    
+    // Draw table top
+    glPushMatrix();
+    glTranslatef(0.0f, -1.0f, 0.0f);
+    glScalef(4.0f, 0.2f, 3.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+    
+    // Draw table legs
+    // Front left leg
+    glPushMatrix();
+    glTranslatef(-1.7f, -2.0f, 1.2f);
+    glScalef(0.2f, 2.0f, 0.2f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+    
+    // Front right leg
+    glPushMatrix();
+    glTranslatef(1.7f, -2.0f, 1.2f);
+    glScalef(0.2f, 2.0f, 0.2f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+    
+    // Back left leg
+    glPushMatrix();
+    glTranslatef(-1.7f, -2.0f, -1.2f);
+    glScalef(0.2f, 2.0f, 0.2f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+    
+    // Back right leg
+    glPushMatrix();
+    glTranslatef(1.7f, -2.0f, -1.2f);
+    glScalef(0.2f, 2.0f, 0.2f);
+    glutSolidCube(1.0);
+    glPopMatrix();
 }
 
-/* ---------- RAINBOW TEAPOT using clipping planes ---------- */
 void drawColorfulTeapot(void)
 {
-    GLfloat band_height = (POT_TOP - POT_BOTTOM) / NUM_BANDS;
-
-    GLfloat pot_specular[]  = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat pot_shininess[] = { 110.0 };
-
-    for (int i = 0; i < NUM_BANDS; i++) {
-        GLfloat y_low  = POT_BOTTOM + i * band_height;
-        GLfloat y_high = y_low + band_height;
-
-        GLfloat amb[4] = { rainbow[i][0] * 0.3f,
-                           rainbow[i][1] * 0.3f,
-                           rainbow[i][2] * 0.3f, 1.0f };
-        GLfloat dif[4] = { rainbow[i][0],
-                           rainbow[i][1],
-                           rainbow[i][2], 1.0f };
-
-        setMaterial(amb, dif, pot_specular, pot_shininess);
-
-        /* keep y >= y_low */
-        GLdouble eqLow[4]  = { 0.0,  1.0, 0.0, -y_low };
-        glClipPlane(GL_CLIP_PLANE0, eqLow);
-
-        /* keep y <= y_high */
-        GLdouble eqHigh[4] = { 0.0, -1.0, 0.0,  y_high };
-        glClipPlane(GL_CLIP_PLANE1, eqHigh);
-
-        glutSolidTeapot(POT_RADIUS);
+    // Draw teapot body with red color
+    glColor3f(0.9f, 0.2f, 0.2f); // Red
+    glPushMatrix();
+    glTranslatef(0.0f, -0.2f, 0.0f);
+    glScalef(1.0f, 0.8f, 1.0f);
+    glutSolidTeapot(0.8);
+    glPopMatrix();
+    
+    // Add colorful decorations using small spheres
+    // Blue sphere on top (lid knob)
+    glColor3f(0.2f, 0.3f, 0.9f); // Blue
+    glPushMatrix();
+    glTranslatef(0.0f, 0.85f, 0.0f);
+    glutSolidSphere(0.1, 20, 20);
+    glPopMatrix();
+    
+    // Green spheres around the body
+    glColor3f(0.2f, 0.8f, 0.2f); // Green
+    for (int i = 0; i < 8; i++) {
+        float angle = i * 45.0f * 3.14159f / 180.0f;
+        float x = 0.7f * cos(angle);
+        float z = 0.7f * sin(angle);
+        
+        glPushMatrix();
+        glTranslatef(x, -0.3f, z);
+        glutSolidSphere(0.08, 15, 15);
+        glPopMatrix();
     }
-
-    glDisable(GL_CLIP_PLANE0);
-    glDisable(GL_CLIP_PLANE1);
+    
+    // Yellow band around the middle
+    glColor3f(0.9f, 0.9f, 0.2f); // Yellow
+    glPushMatrix();
+    glTranslatef(0.0f, 0.1f, 0.0f);
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+    glutSolidTorus(0.05, 0.75, 10, 30);
+    glPopMatrix();
 }
 
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     glLoadIdentity();
-
-    gluLookAt(4.5, 5.0, 8.0,
-              0.0, 1.0, 0.0,
-              0.0, 1.0, 0.0);
-
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-    /* ---------- TABLE TOP ---------- */
+    
+    // Set camera position
+    gluLookAt(6.0, 5.0, 8.0,  // Eye position
+              0.0, 0.0, 0.0,  // Look at point
+              0.0, 1.0, 0.0); // Up vector
+    
+    // Apply rotation
+    glRotatef(rotateX, 1.0f, 0.0f, 0.0f);
+    glRotatef(rotateY, 0.0f, 1.0f, 0.0f);
+    
+    // Update light position (in world space)
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    
+    // Draw the table
+    drawTable();
+    
+    // Draw the colorful teapot on top of the table
     glPushMatrix();
-        setMaterial(table_ambient, table_diffuse,
-                    table_specular, table_shininess);
-        glScalef(4.0, 0.2, 4.0);
-        glutSolidCube(1.0);
+    glTranslatef(0.0f, 0.0f, 0.0f);
+    drawColorfulTeapot();
     glPopMatrix();
-
-    /* ---------- TABLE LEGS ---------- */
-    setMaterial(leg_ambient, leg_diffuse, leg_specular, leg_shininess);
-
-    GLfloat legX[4] = { 1.7, -1.7,  1.7, -1.7 };
-    GLfloat legZ[4] = { 1.7,  1.7, -1.7, -1.7 };
-
-    for (int i = 0; i < 4; i++) {
-        glPushMatrix();
-            glTranslatef(legX[i], -1.0, legZ[i]);
-            glScalef(0.3, 2.0, 0.3);
-            glutSolidCube(1.0);
-        glPopMatrix();
-    }
-
-    /* ---------- COLORFUL TEAPOT ---------- */
-    glPushMatrix();
-        glTranslatef(0.0, 0.9, 0.0);
-        drawColorfulTeapot();
-    glPopMatrix();
-
-    /* ---------- RED APPLE (left) ---------- */
-    GLfloat apple_amb[]   = { 0.30, 0.00, 0.00, 1.0 };
-    GLfloat apple_dif[]   = { 0.90, 0.10, 0.10, 1.0 };
-    GLfloat apple_spec[]  = { 1.00, 0.90, 0.90, 1.0 };
-    GLfloat apple_shine[] = { 90.0 };
-
-    glPushMatrix();
-        setMaterial(apple_amb, apple_dif, apple_spec, apple_shine);
-        glTranslatef(-1.2, 0.25, 0.8);
-        glutSolidSphere(0.25, 40, 40);
-    glPopMatrix();
-
-    /* ---------- ORANGE (right) ---------- */
-    GLfloat org_amb[]   = { 0.40, 0.18, 0.00, 1.0 };
-    GLfloat org_dif[]   = { 1.00, 0.55, 0.00, 1.0 };
-    GLfloat org_spec[]  = { 1.00, 1.00, 0.80, 1.0 };
-    GLfloat org_shine[] = { 70.0 };
-
-    glPushMatrix();
-        setMaterial(org_amb, org_dif, org_spec, org_shine);
-        glTranslatef(1.2, 0.30, 0.8);
-        glutSolidSphere(0.30, 40, 40);
-    glPopMatrix();
-
-    /* ---------- GREEN LIME (back) ---------- */
-    GLfloat lime_amb[]   = { 0.10, 0.30, 0.05, 1.0 };
-    GLfloat lime_dif[]   = { 0.35, 0.90, 0.15, 1.0 };
-    GLfloat lime_spec[]  = { 0.90, 1.00, 0.90, 1.0 };
-    GLfloat lime_shine[] = { 80.0 };
-
-    glPushMatrix();
-        setMaterial(lime_amb, lime_dif, lime_spec, lime_shine);
-        glTranslatef(0.0, 0.22, -1.3);
-        glutSolidSphere(0.22, 40, 40);
-    glPopMatrix();
-
+    
+    // Draw a simple floor
+    glColor3f(0.2f, 0.2f, 0.2f);
+    glBegin(GL_QUADS);
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(-10.0f, -3.0f, -10.0f);
+        glVertex3f(10.0f, -3.0f, -10.0f);
+        glVertex3f(10.0f, -3.0f, 10.0f);
+        glVertex3f(-10.0f, -3.0f, 10.0f);
+    glEnd();
+    
     glutSwapBuffers();
 }
 
@@ -200,17 +183,69 @@ void reshape(int w, int h)
     glMatrixMode(GL_MODELVIEW);
 }
 
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key) {
+        case 27: // ESC key
+            exit(0);
+            break;
+        case 'x':
+            rotateX += 5.0f;
+            glutPostRedisplay();
+            break;
+        case 'X':
+            rotateX -= 5.0f;
+            glutPostRedisplay();
+            break;
+        case 'y':
+            rotateY += 5.0f;
+            glutPostRedisplay();
+            break;
+        case 'Y':
+            rotateY -= 5.0f;
+            glutPostRedisplay();
+            break;
+    }
+}
+
+void specialKeys(int key, int x, int y)
+{
+    switch (key) {
+        case GLUT_KEY_UP:
+            rotateX -= 5.0f;
+            break;
+        case GLUT_KEY_DOWN:
+            rotateX += 5.0f;
+            break;
+        case GLUT_KEY_LEFT:
+            rotateY -= 5.0f;
+            break;
+        case GLUT_KEY_RIGHT:
+            rotateY += 5.0f;
+            break;
+    }
+    glutPostRedisplay();
+}
+
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(700, 600);
+    glutInitWindowSize(800, 600);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("Colorful Teapot on a Table");
-
+    glutCreateWindow("Colorful Teapot on Table - OpenGL Shading");
+    
     init();
+    
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeys);
+    
+    printf("Controls:\n");
+    printf("- Arrow keys or X/x, Y/y to rotate the scene\n");
+    printf("- ESC to exit\n");
+    
     glutMainLoop();
     return 0;
 }
